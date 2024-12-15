@@ -1,21 +1,19 @@
-const chai = require('chai')
-global.expect = chai.expect
-const fs = require('fs')
-const jsdom = require('mocha-jsdom')
-const path = require('path')
-const babel = require("@babel/core");
-const url = "http://localhost"
+import { expect } from 'chai';
+import fs from 'fs';
+import { JSDOM } from 'jsdom';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const html = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf-8')
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const babelResult = babel.transformFileSync(
-  path.resolve(__dirname, '..', 'index.js'), {
-    presets: ['@babel/env']
-  }
-);
+const html = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf-8');
 
-const src = babelResult.code
-
-jsdom({
-  html, src, url
+const dom = new JSDOM(html, {
+  runScripts: 'dangerously',
+  url: 'http://localhost',
 });
+
+global.window = dom.window;
+global.document = dom.window.document;
+
